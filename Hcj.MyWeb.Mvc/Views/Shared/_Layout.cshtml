@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Hcj.MyWeb.Mvc</title>
+    <title>梦醒太晚</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
 </head>
@@ -11,7 +11,7 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Hcj.MyWeb.Mvc</a>
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">首页</a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -26,6 +26,16 @@
                         </li>
                     </ul>
                 </div>
+                <div id="userdiv">
+                    <div id="userPhoto">
+                        <img id="imgPhoto" style="border-radius: 50%;border:2px solid purple;width: 56px;height: 56px;">
+                    </div>
+                    <div style="width: 90px; height: 83px; background-color: #b3d7ff; position: absolute;border-radius:10px;display:none" id="userInfo">
+                        <div style="text-align:center;margin-top:5px;" id="userno"></div>
+                        <div style="text-align:center;" id="username"></div>
+                        <div style="text-align:center;"><a href="#" onclick="out()">退出</a></div>
+                    </div>
+                </div>
             </div>
         </nav>
     </header>
@@ -37,12 +47,48 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2022 - Hcj.MyWeb.Mvc - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            &copy; 2022 - Huermes
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script>
+        $("#userPhoto").mouseover(function () {
+            $("#userInfo").show();
+        });
+        $("#userInfo").mouseleave(function () {
+            $("#userInfo").hide();
+        });
+        $.ajax({
+            type: "post",
+            url: "/Home/GetUser",
+            data: {},
+            dataType: "json",
+            async: false,
+            success: function (data) {
+                $("#imgPhoto").attr("src", "/images/" + data.UserPhoto);
+                $("#userno").html(data.UserNO);
+                $("#username").html(data.UserName);
+            }
+        });
+        function out() {
+            $.ajax({
+                type: "post",
+                url: "/Login/Login/LoginOut",
+                data: {},
+                dataType: "json",
+                async: false,
+                success: function (data) {
+                    var curWwwPath = window.document.location.href;
+                    var pathName = window.document.location.pathname;
+                    var pos = curWwwPath.indexOf(pathName);
+                    location.href = curWwwPath.substring(0, pos);
+                    return false;
+                }
+            });
+        }
+    </script>
     @RenderSection("Scripts", required: false)
 </body>
 </html>

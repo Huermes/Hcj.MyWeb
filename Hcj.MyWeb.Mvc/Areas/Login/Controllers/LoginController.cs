@@ -49,6 +49,7 @@ namespace Hcj.MyWeb.Mvc.Areas.Login.Controllers
                     new Claim("UserNo", data.UserNO),
                     new Claim("UserName", data.UserName),
                     new Claim("Password", data.Password),
+                    new Claim("UserPhoto", data.UserPhoto),
                     new Claim("IsAdmin", data.IsAdmin.ToString())
                 };
 
@@ -63,6 +64,13 @@ namespace Hcj.MyWeb.Mvc.Areas.Login.Controllers
             });
             return Json(result);
         }
+
+        /// <summary>
+        /// 修改密码
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public JsonResult UpdateUser(TM_Hcj_User_PO model) => Json(service.UpdateUser(model));
 
         /// <summary>
         /// 退出

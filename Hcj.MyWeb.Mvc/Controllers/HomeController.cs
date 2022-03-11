@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 
 namespace Hcj.MyWeb.Mvc.Controllers
 {
-    [Area("Home")]
     public class HomeController : BasePublicController
     {
         private readonly ILogger<HomeController> _logger;
@@ -25,6 +24,15 @@ namespace Hcj.MyWeb.Mvc.Controllers
             return View();
         }
 
+        /// <summary>
+        /// 获取用户信息
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public JsonResult GetUser()
+        {
+            return Json(UserInfo);
+        }
         public IActionResult Privacy()
         {
             return View();

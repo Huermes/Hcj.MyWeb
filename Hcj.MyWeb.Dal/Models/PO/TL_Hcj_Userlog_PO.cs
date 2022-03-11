@@ -20,7 +20,7 @@ namespace Hcj.MyWeb.Dal.Models.PO
         public int UserID { get; set; }
 
         /// <summary>
-        /// 日志类型 1 新增 2 修改 3 登录
+        /// 日志类型 1 新增 2 修改 3 登录 4 申请修改密码
         /// </summary>
         public int LogType { get; set; }
 

@@ -30,6 +30,7 @@ namespace Hcj.MyWeb.Mvc.Controllers
                     UserName = User.FindFirstValue("UserName"),
                     Password = User.FindFirstValue("Password"),
                     IsAdmin = int.Parse(User.FindFirstValue("IsAdmin")),
+                    UserPhoto= User.FindFirstValue("UserPhoto"),
                 };
             }
         }

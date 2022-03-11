@@ -92,7 +92,7 @@ namespace Hcj.MyWeb.Dal.Services
                         }
                     }
                 }
-
+                int a = new Random().Next(1, 5);
                 // 组装
                 var executUserModel = new TM_Hcj_User_PO
                 {
@@ -102,7 +102,8 @@ namespace Hcj.MyWeb.Dal.Services
                     IsAdmin = 0,
                     Locked = 0,
                     Password = model.Password,
-                    UserName = model.UserName
+                    UserName = model.UserName,
+                    UserPhoto = $"{a}.jpg",
                 };
                 var executUserLogModel = new TL_Hcj_UserLog_PO
                 {
@@ -121,10 +122,106 @@ namespace Hcj.MyWeb.Dal.Services
                         try
                         {
                             // 插入用户表
-                            executUserLogModel.UserID = masterConn.QueryFirst<int>(@"INSERT into tm_hcj_user(UserNO,UserName,Password,Locked,IsAdmin,CreateDate,ipAddress)
-VALUES(@UserNO, @UserName, @Password, @Locked, @IsAdmin, @CreateDate, @ipAddress); Select @@IDENTITY;", executUserModel);
+                            executUserLogModel.UserID = masterConn.QueryFirst<int>(@"INSERT into tm_hcj_user(UserNO,UserName,Password,Locked,IsAdmin,CreateDate,ipAddress,UserPhoto)
+VALUES(@UserNO, @UserName, @Password, @Locked, @IsAdmin, @CreateDate, @ipAddress,@UserPhoto); Select @@IDENTITY;", executUserModel);
                             // 插入用户日志表
-                            masterConn.Execute(@"INSERT into tm_hcj_user(UserID,LogType,UserName,Password,MobilePhone,UserPhoto,ipAddress)
+                            masterConn.Execute(@"INSERT into TL_Hcj_UserLog(UserID,LogType,UserName,Password,MobilePhone,UserPhoto,ipAddress)
+VALUES(@UserID,@LogType,@UserName,@Password,@MobilePhone,@UserPhoto,@ipAddress);", executUserLogModel);
+                            tran.Commit();
+                        }
+                        catch (Exception)
+                        {
+                            tran.Rollback();
+                            throw;
+                        }
+                    }
+                }
+                // 返回
+                result.Flag = true;
+            }
+            catch (Exception ex)
+            {
+                result.Flag = false;
+                result.Message = ex.Message;
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// 修改密码
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public BaseResponse UpdateUser(TM_Hcj_User_PO model)
+        {
+            var result = new BaseResponse();
+            try
+            {
+                // 必填项验证
+                if (string.IsNullOrEmpty(model.UserNO))
+                {
+                    result.Message = "用户账号必填";
+                    return result;
+                }
+                if (string.IsNullOrEmpty(model.MobilePhone))
+                {
+                    result.Message = "手机号必填";
+                    return result;
+                }
+                if (string.IsNullOrEmpty(model.UserName))
+                {
+                    result.Message = "用户名必填";
+                    return result;
+                }
+                if (string.IsNullOrEmpty(model.IpAddress))
+                {
+                    result.Message = "IP未获取到";
+                    return result;
+                }
+                if (model.IpAddress.Length > 50)
+                {
+                    result.Message = "用户IP不能超过50个字符";
+                    return result;
+                }
+                // 业务验证
+                // 名字不能重复，用户号不能重复，IP不能重复
+                int oldUserID = 0;
+                using (var masterConn = new MySqlConnection(Connection))
+                {
+                    oldUserID = masterConn.QueryFirstOrDefault<int>("select UserID from tm_hcj_user where UserNO= @UserNO AND UserName=@UserName", model, commandTimeout: 300);
+                    if (oldUserID <= 0)
+                    {
+                        result.Message = "账号和名字没有已注册的用户";
+                        return result;
+                    }
+                }
+
+                // 组装
+                var executUserModel = new TM_Hcj_User_PO
+                {
+                    UserID = oldUserID,
+                    MobilePhone = model.MobilePhone,
+                };
+                var executUserLogModel = new TL_Hcj_UserLog_PO
+                {
+                    ipAddress = model.IpAddress,
+                    LogType = 4,
+                    MobilePhone = model.MobilePhone,
+                    UserID = oldUserID,
+                };
+
+                // 执行
+                using (var masterConn = new MySqlConnection(Connection))
+                {
+                    masterConn.Open();
+                    using (var tran = masterConn.BeginTransaction())
+                    {
+                        try
+                        {
+                            // 插入用户表
+                            executUserLogModel.UserID = masterConn.Execute(@"update tm_hcj_user set  MobilePhone=@MobilePhone,UpdateDate=now() where UserID=@UserID;", executUserModel);
+                            // 插入用户日志表
+                            masterConn.Execute(@"INSERT into TL_Hcj_UserLog(UserID,LogType,UserName,Password,MobilePhone,UserPhoto,ipAddress)
 VALUES(@UserID,@LogType,@UserName,@Password,@MobilePhone,@UserPhoto,@ipAddress);", executUserLogModel);
                             tran.Commit();
                         }
@@ -170,6 +267,36 @@ VALUES(@UserID,@LogType,@UserName,@Password,@MobilePhone,@UserPhoto,@ipAddress);
                 {
                     result.Message = "用户不存在，或密码错误";
                     return result;
+                }
+
+                var executUserLogModel = new TL_Hcj_UserLog_PO
+                {
+                    ipAddress = model.IpAddress,
+                    LogType = 3,
+                    UserID = userObj.UserID
+                };
+
+                // 执行
+                using (var masterConn = new MySqlConnection(Connection))
+                {
+                    masterConn.Open();
+                    using (var tran = masterConn.BeginTransaction())
+                    {
+                        try
+                        {
+                            // 插入用户表
+                            executUserLogModel.UserID = masterConn.Execute($@"update tm_hcj_user set  LastLoginDate=now() where UserID={userObj.UserID};", null);
+                            // 插入用户日志表
+                            masterConn.Execute(@"INSERT into TL_Hcj_UserLog(UserID,LogType,UserName,Password,MobilePhone,UserPhoto,ipAddress)
+VALUES(@UserID,@LogType,@UserName,@Password,@MobilePhone,@UserPhoto,@ipAddress);", executUserLogModel);
+                            tran.Commit();
+                        }
+                        catch (Exception)
+                        {
+                            tran.Rollback();
+                            throw;
+                        }
+                    }
                 }
                 result.Data = userObj;
                 result.Flag = true;
