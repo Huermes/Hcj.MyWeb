@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31005.135
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hcj.MyWeb.Mvc", "Hcj.MyWeb.Mvc\Hcj.MyWeb.Mvc.csproj", "{C74F679F-4965-4301-B22F-549507E8068B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hcj.MyWeb.Dal", "Hcj.MyWeb.Dal\Hcj.MyWeb.Dal.csproj", "{BF24A32E-B124-4EE4-8116-116C350A64D2}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C74F679F-4965-4301-B22F-549507E8068B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C74F679F-4965-4301-B22F-549507E8068B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C74F679F-4965-4301-B22F-549507E8068B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C74F679F-4965-4301-B22F-549507E8068B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BF24A32E-B124-4EE4-8116-116C350A64D2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF24A32E-B124-4EE4-8116-116C350A64D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BF24A32E-B124-4EE4-8116-116C350A64D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BF24A32E-B124-4EE4-8116-116C350A64D2}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6AEC8050-381D-4C43-9301-E2B087EA1D49}
+	EndGlobalSection
+EndGlobal

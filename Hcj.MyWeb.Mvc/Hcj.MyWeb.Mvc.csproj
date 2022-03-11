@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Areas\Login\Data\**" />
+    <Compile Remove="Areas\Login\Models\**" />
+    <Content Remove="Areas\Login\Data\**" />
+    <Content Remove="Areas\Login\Models\**" />
+    <EmbeddedResource Remove="Areas\Login\Data\**" />
+    <EmbeddedResource Remove="Areas\Login\Models\**" />
+    <None Remove="Areas\Login\Data\**" />
+    <None Remove="Areas\Login\Models\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Hcj.MyWeb.Dal\Hcj.MyWeb.Dal.csproj" />
+  </ItemGroup>
+
+</Project>
