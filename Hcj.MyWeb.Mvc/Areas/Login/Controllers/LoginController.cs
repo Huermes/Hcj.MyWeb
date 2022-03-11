@@ -20,7 +20,7 @@ namespace Hcj.MyWeb.Mvc.Areas.Login.Controllers
             return View();
         }
 
-        LoginServices service = new LoginServices();
+        readonly LoginServices service = new LoginServices();
 
         /// <summary>
         /// 注册用户
@@ -41,15 +41,17 @@ namespace Hcj.MyWeb.Mvc.Areas.Login.Controllers
             {
                 return Json(result);
             }
+            var data = result.Data as TM_Hcj_User_PO;
             //登录认证，存入Cookie
             var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.Name,result.Data.UserID),
-                new Claim("UserNo",result.Data.UserNo),
-                new Claim("UserName",result.Data.UserName),
-                new Claim("Password",result.Data.Password),
-                new Claim("IsAdmin",result.Data.IsAdmin)
-            };
+                {
+                    new Claim(ClaimTypes.Sid,data.UserID.ToString()),
+                    new Claim("UserNo", data.UserNO),
+                    new Claim("UserName", data.UserName),
+                    new Claim("Password", data.Password),
+                    new Claim("IsAdmin", data.IsAdmin.ToString())
+                };
+
             //init the identity instances 
             var userPrincipal = new ClaimsPrincipal(new ClaimsIdentity(claims, "Customer"));
             //signin 
@@ -60,6 +62,17 @@ namespace Hcj.MyWeb.Mvc.Areas.Login.Controllers
                 AllowRefresh = false
             });
             return Json(result);
+        }
+
+        /// <summary>
+        /// 退出
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public JsonResult LoginOut()
+        {
+            HttpContext.SignOutAsync().Wait();
+            return Json(new { });
         }
 
     }

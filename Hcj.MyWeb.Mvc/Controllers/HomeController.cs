@@ -10,8 +10,8 @@ using System.Threading.Tasks;
 
 namespace Hcj.MyWeb.Mvc.Controllers
 {
-    [Authorize]
-    public class HomeController : Controller
+    [Area("Home")]
+    public class HomeController : BasePublicController
     {
         private readonly ILogger<HomeController> _logger;
 

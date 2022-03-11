@@ -48,6 +48,26 @@ namespace Hcj.MyWeb.Dal.Services
                     result.Message = "IP未获取到";
                     return result;
                 }
+                if (model.UserNO.Length > 20)
+                {
+                    result.Message = "用户登录号不能超过20个字符";
+                    return result;
+                }
+                if (model.UserName.Length > 20)
+                {
+                    result.Message = "用户名字不能超过20个字符";
+                    return result;
+                }
+                if (model.Password.Length < 3 || model.Password.Length > 12)
+                {
+                    result.Message = "用户密码请在3-12位之间";
+                    return result;
+                }
+                if (model.IpAddress.Length > 50)
+                {
+                    result.Message = "用户IP不能超过50个字符";
+                    return result;
+                }
                 // 业务验证
                 // 名字不能重复，用户号不能重复，IP不能重复
                 using (var masterConn = new MySqlConnection(Connection))
@@ -139,15 +159,17 @@ VALUES(@UserID,@LogType,@UserName,@Password,@MobilePhone,@UserPhoto,@ipAddress);
                 if (string.IsNullOrEmpty(model.UserNO) || string.IsNullOrEmpty(model.Password))
                 {
                     result.Message = "请输入账号和密码";
+                    return result;
                 }
                 var userObj = new TM_Hcj_User_PO();
                 using (var masterConn = new MySqlConnection(Connection))
                 {
-                    userObj = masterConn.QueryFirstOrDefault<TM_Hcj_User_PO>("select * from tm_hcj_user where UserName= @UserName AND Password=@Password", model, commandTimeout: 300);
+                    userObj = masterConn.QueryFirstOrDefault<TM_Hcj_User_PO>("select * from tm_hcj_user where UserNo= @UserNO AND Password=@Password", model, commandTimeout: 300);
                 }
                 if (userObj == null)
                 {
                     result.Message = "用户不存在，或密码错误";
+                    return result;
                 }
                 result.Data = userObj;
                 result.Flag = true;
