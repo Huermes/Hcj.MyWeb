@@ -92,7 +92,7 @@ namespace Hcj.MyWeb.Dal.Services
                         }
                     }
                 }
-                int a = new Random().Next(1, 5);
+                int a = new Random().Next(1, 6);
                 // 组装
                 var executUserModel = new TM_Hcj_User_PO
                 {

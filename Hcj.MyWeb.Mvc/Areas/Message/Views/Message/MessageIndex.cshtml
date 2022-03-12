@@ -1,0 +1,95 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    @model dynamic
+}
+
+<link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+<script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+<div class="panel panel-success">
+    <div class="panel-heading">
+        <h3 class="panel-title">我要留言</h3>
+    </div>
+    <div class="panel-body">
+        <div>
+            <form role="form" id="messageForm">
+                <div class="form-group">
+                    <label for="name">你想说些什么？</label>
+                    <textarea class="form-control" rows="3" placeholder="输入内容" id="message"></textarea>
+                </div>
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox" id="mtype"> 是否公开，勾选后所有人可看到你的留言，不勾选只有自己能看到
+                    </label>
+                </div>
+                <button type="submit" class="btn btn-info">发表</button>
+            </form>
+        </div>
+    </div>
+</div>
+<ul class="pager" style="text-align:right;display:none" id="pageU">
+    <li><a href="#" onclick="pageSize(1)">上一页</a></li>
+    <li><a href="#" onclick="pageSize(2)">下一页</a></li>
+</ul>
+
+<script>
+    var result =@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model));
+    if (result.Flag) {
+        initMessage(result);
+    }
+    // 保存留言
+    $("#messageForm").submit(() => {
+        var mes = $("#message").val();
+        if (!mes) {
+            alert("不能发表空留言");
+        }
+        $.ajax({
+            type: "post",
+            url: "/Message/Message/AddMessage",
+            data: { MessageType: $("#mtype").is(":checked")?1:0, Message: mes},
+            dataType: "json",
+            async: false,
+            success: function (data) {
+                if (data.Flag) {
+                    location.href = "/Message/Message/MessageIndex";
+                    return false;
+                }
+                alert(data.Message);
+            }
+        });
+        return false;
+    });
+    var start = 0;
+    function pageSize(type) {
+        if (type == 1) {
+            start = start > 0 ? start - 1 : start;
+        }
+        if (type == 2) {
+            start = start < parseInt(result.Total / 10) ? start + 1 : 0;
+        }
+        $.ajax({
+            type: "post",
+            url: "/Message/Message/QueryMessage",
+            data: { Type: 1, StartPage: start },
+            dataType: "json",
+            async: false,
+            success: function (data) {
+                if (data.Flag) {
+                    initMessage(data);
+                    return false;
+                }
+                alert(data.Message);
+            }
+        });
+    }
+    function initMessage(resultData) {
+        $("div.panel-warning").remove();
+        if (resultData.Total > 10) {
+            $("#pageU").show();
+        } 
+        $.each(resultData.Data, (i, v) => {
+            $("#pageU").after(`<div class="panel panel-warning"><div class="panel-heading"><h3 class="panel-title">${v.CreateDateString}</h3></div><div class="panel-body">${v.Message}</div></div>`);
+        });
+    }
+</script>

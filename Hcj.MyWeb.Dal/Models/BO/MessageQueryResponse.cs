@@ -10,6 +10,7 @@ namespace Hcj.MyWeb.Dal.Models.BO
     /// </summary>
     public class MessageQueryResponse : TT_Hcj_Message_PO
     {
-        public int Total { get; set; }
+        public string CreateDateString { get; set; }
+        public string UserName { get; set; }
     }
 }

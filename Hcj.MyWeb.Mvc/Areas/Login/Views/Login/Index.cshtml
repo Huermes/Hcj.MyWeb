@@ -399,7 +399,25 @@
                 return false;
             }
         }
-
+    </script>
+    <script>
+        $(function () {
+            $("#login-username").keydown((e) => {
+                if (e.keyCode === 13) {
+                    login();
+                }
+            });
+            $("#login-password").keydown((e) => {
+                if (e.keyCode === 13) {
+                    login();
+                }
+            });
+            $("#login-verify-code").keydown((e) => {
+                if (e.keyCode === 13) {
+                    login();
+                }
+            });
+        });
     </script>
     <style type="text/css">
         html {

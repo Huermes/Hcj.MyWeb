@@ -29,5 +29,10 @@ namespace Hcj.MyWeb.Dal.Models.PO
         /// </summary>
         public string Message { get; set; }
 
+        /// <summary>
+        /// 创建时间
+        /// </summary>
+        public DateTime CreateDate { get; set; }
+
     }
 }

@@ -1,0 +1,52 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    @model dynamic
+}
+
+<link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+<script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+<ul class="pager" style="text-align:right;display:none" id="pageU">
+    <li><a href="#" onclick="pageSize(1)">上一页</a></li>
+    <li><a href="#" onclick="pageSize(2)">下一页</a></li>
+</ul>
+
+<script>
+    var result =@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model));
+    if (result.Flag) {
+        initMessage(result);
+    }
+    var start = 0;
+    function pageSize(type) {
+        if (type == 1) {
+            start = start > 0 ? start - 1 : start;
+        }
+        if (type == 2) {
+            start = start < parseInt(result.Total / 10) ? start + 1 : 0;
+        }
+        $.ajax({
+            type: "post",
+            url: "/Message/Message/QueryMessage",
+            data: { Type: 2, StartPage: start },
+            dataType: "json",
+            async: false,
+            success: function (data) {
+                if (data.Flag) {
+                    initMessage(data);
+                    return false;
+                }
+                alert(data.Message);
+            }
+        });
+    }
+    function initMessage(resultData) {
+        $("div.panel-primary").remove();
+        if (resultData.Total > 10) {
+            $("#pageU").show();
+        }
+        $.each(resultData.Data, (i, v) => {
+            $("#pageU").after(`<div class="panel panel-primary"><div class="panel-heading"><h3 class="panel-title">${v.CreateDateString} —— ${v.UserName}</h3></div><div class="panel-body">${v.Message}</div></div>`);
+        });
+    }
+</script>

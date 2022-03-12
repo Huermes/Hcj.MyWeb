@@ -3,12 +3,26 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>梦醒太晚</title>
+    <title>啊哈哈哈哈哈哈</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+    <style>
+        .abc {
+            position: absolute;
+            color: red;
+            font-weight: bold;
+        }
+
+        html, body {
+            cursor: url("/Content/3.ico"),auto;
+        }
+    </style>
 </head>
 <body>
     <header>
+        <img src="~/Content/1.gif" style="width: 12%;position:absolute;top:4px;left:80px;z-index:1;">
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container">
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">首页</a>
@@ -17,40 +31,42 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
-                    <ul class="navbar-nav flex-grow-1">
+                    <ul class="navbar-nav flex-grow-1" style="margin-right:20px;">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link text-dark" href="/Message/Message/MessageIndex">我的留言</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            <a class="nav-link text-dark"  href="/Message/Message/MessageCenterIndex">留言广场</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" target="_blank" href="http://localhost:8088/">随便逛逛</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">公告</a>
                         </li>
                     </ul>
+
+                </div>
+                <div style="margin-top:15px;">
+                    <span id="totay" style="color: #fd7e14;">用心去体会每一天，你在成长也在收获。乐观向上，快乐生活。—— 《胡》</span>
                 </div>
                 <div id="userdiv">
                     <div id="userPhoto">
                         <img id="imgPhoto" style="border-radius: 50%;border:2px solid purple;width: 56px;height: 56px;">
                     </div>
                     <div style="width: 90px; height: 83px; background-color: #b3d7ff; position: absolute;border-radius:10px;display:none" id="userInfo">
-                        <div style="text-align:center;margin-top:5px;" id="userno"></div>
-                        <div style="text-align:center;" id="username"></div>
-                        <div style="text-align:center;"><a href="#" onclick="out()">退出</a></div>
+                        <div style="text-align:center;margin-top:5px;height:25px;" id="userno"></div>
+                        <div style="text-align: center; height: 25px;" id="username"></div>
+                        <div style="text-align: center; height: 25px;"><a href="#" onclick="out()">退出</a></div>
                     </div>
                 </div>
             </div>
         </nav>
     </header>
     <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
+        @RenderBody()
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2022 - Huermes
-        </div>
-    </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script>
@@ -72,6 +88,13 @@
                 $("#username").html(data.UserName);
             }
         });
+        setInterval(() => {
+            fetch("https://v1.hitokoto.cn")
+                .then(response => response.json())
+                .then(result => {
+                    $("#totay").text(`${result.hitokoto} —— 《${result.from}》`);
+                });
+        }, 10000);
         function out() {
             $.ajax({
                 type: "post",
@@ -88,6 +111,19 @@
                 }
             });
         }
+        //var arr = ['富强', '民主', '文明', '和谐', '自由', '平等', '公正', '法制', '爱国', '敬业', '诚信', '友善','♥'];
+        var i = 1;
+        $("html").click(function (e) {
+            var nowId = "d" + i;
+            i++;
+            var content = `<div id="${nowId}" class="abc"><img src="/Content/click${Math.round(Math.random() * 10)}.png" style="width:18%" /></div>`;
+            $("body").append(content);
+            $("#" + nowId).css({ "left": e.pageX, "top": e.pageY }).fadeIn(200).html();
+            $("#" + nowId).animate({ "top": e.pageY - 100, "left": e.pageX }, 500).fadeOut(500);
+            setTimeout(function () {
+                $("#" + nowId).remove();
+            }, 950);
+        });
     </script>
     @RenderSection("Scripts", required: false)
 </body>

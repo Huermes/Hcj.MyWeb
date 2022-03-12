@@ -5,6 +5,7 @@ using Hcj.MyWeb.Dal.Models.PO;
 using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Text;
 
@@ -28,7 +29,7 @@ namespace Hcj.MyWeb.Dal.Services
         {
             var result = new BaseResponse
             {
-                Data = new MessageQueryResponse()
+                Data = new List<MessageQueryResponse>()
             };
             try
             {
@@ -47,11 +48,11 @@ namespace Hcj.MyWeb.Dal.Services
                 {
                     model.StartPage = 0;
                 }
-                if (model.PageSize > 100)
+                if (model.PageSize > 10 || model.PageSize <= 0)
                 {
-                    model.PageSize = 100;
+                    model.PageSize = 10;
                 }
-
+                model.StartPage *= model.PageSize;
                 int total = 0;
                 using (var masterConn = new MySqlConnection(Connection))
                 {
@@ -66,7 +67,7 @@ namespace Hcj.MyWeb.Dal.Services
                     string sql = model.Type switch
                     {
                         1 => $"select * from tt_hcj_message where UserID={userModel.UserID} limit @StartPage,@PageSize",
-                        2 => "select * from tt_hcj_message where MessageType=1 limit @StartPage,@PageSize",
+                        2 => "select t1.CreateDate,t1.Message,t2.UserName from tt_hcj_message t1 join tm_hcj_user t2 on t1.UserID=t2.UserID where t1.MessageType=1 limit @StartPage,@PageSize",
                         _ => ""
                     };
                     total = masterConn.QueryFirst<int>(sqlCount, null, commandTimeout: 300);
@@ -75,9 +76,11 @@ namespace Hcj.MyWeb.Dal.Services
                         result.Message = "未找到数据";
                         return result;
                     }
-                    result.Data = masterConn.QueryFirstOrDefault<MessageQueryResponse>(sql, model, commandTimeout: 300);
+                    var list = masterConn.Query<MessageQueryResponse>(sql, model, commandTimeout: 300).ToList();
+                    list.ForEach(x => x.CreateDateString = x.CreateDate.ToString("yyyy-MM-dd HH:mm:ss"));
+                    result.Data = list;
                 }
-                result.Data.Total = total;
+                result.Total = total;
                 // 返回
                 result.Flag = true;
             }
@@ -125,7 +128,7 @@ namespace Hcj.MyWeb.Dal.Services
                 // 插入留言表
                 using (var masterConn = new MySqlConnection(Connection))
                 {
-                    masterConn.Execute("INSERT INTO tt_hcj_message(UserID,MessageType,Message)VALUES(@UserID,@MessageType,@Message);", model, commandTimeout: 300);
+                    masterConn.Execute("INSERT INTO tt_hcj_message(UserID,MessageType,Message,CreateDate)VALUES(@UserID,@MessageType,@Message,now());", model, commandTimeout: 300);
                 }
                 result.Flag = true;
             }

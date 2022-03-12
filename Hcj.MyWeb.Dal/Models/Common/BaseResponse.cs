@@ -13,6 +13,7 @@ namespace Hcj.MyWeb.Dal.Models.Common
         public bool Flag { get; set; }
         public string Message { get; set; }
         public string Code { get; set; }
+        public int Total { get; set; }
         public dynamic Data { get; set; }
     }
 }

@@ -24,10 +24,11 @@ namespace Hcj.MyWeb.Mvc.Areas.Message.Controllers
         /// <returns></returns>
         public IActionResult MessageIndex()
         {
-            return View();
+            var result = service.QueryMessage(new MessageQueryRequest { Type = 1 }, UserInfo);
+            return View(result);
         }
 
-        readonly MessageServices service = new MessageServices();
+        readonly MessageServices service = new();
 
         /// <summary>
         /// 查询留言
@@ -42,6 +43,16 @@ namespace Hcj.MyWeb.Mvc.Areas.Message.Controllers
         /// <param name="model"></param>
         /// <returns></returns>
         public JsonResult AddMessage(TT_Hcj_Message_PO model) => Json(service.AddMessage(model, UserInfo));
+
+        /// <summary>
+        /// 留言广场主页面
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult MessageCenterIndex()
+        {
+            var result = service.QueryMessage(new MessageQueryRequest { Type = 2 }, UserInfo);
+            return View(result);
+        }
 
     }
 }
