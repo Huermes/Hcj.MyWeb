@@ -285,10 +285,10 @@ VALUES(@UserID,@LogType,@UserName,@Password,@MobilePhone,@UserPhoto,@ipAddress);
                         try
                         {
                             // 插入用户表
-                            executUserLogModel.UserID = masterConn.Execute($@"update tm_hcj_user set  LastLoginDate=now() where UserID={userObj.UserID};", null);
+                            masterConn.Execute($@"update tm_hcj_user set  LastLoginDate=now() where UserID={userObj.UserID};", null);
                             // 插入用户日志表
-                            masterConn.Execute(@"INSERT into TL_Hcj_UserLog(UserID,LogType,UserName,Password,MobilePhone,UserPhoto,ipAddress)
-VALUES(@UserID,@LogType,@UserName,@Password,@MobilePhone,@UserPhoto,@ipAddress);", executUserLogModel);
+                            masterConn.Execute(@"INSERT into TL_Hcj_UserLog(UserID,LogType,UserName,Password,MobilePhone,UserPhoto,ipAddress,CreateDate)
+VALUES(@UserID,@LogType,@UserName,@Password,@MobilePhone,@UserPhoto,@ipAddress,now());", executUserLogModel);
                             tran.Commit();
                         }
                         catch (Exception)
